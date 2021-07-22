@@ -1,0 +1,38 @@
+{
+  "EventSource": "aws:sns",
+  "EventVersion": "1.0",
+  "EventSubscriptionArn": "arn:aws:sns:ap-northeast-2:175816075786:management-messenger-slack-codepipline-sns:97789c86-4d7c-4331-92a9-21b17a1614bb",
+  "Sns": {
+    "Type": "Notification",
+    "MessageId": "e37a0a39-3d8f-51be-9625-521feeaa4130",
+    "TopicArn": "arn:aws:sns:ap-northeast-2:175816075786:management-messenger-slack-codepipline-sns",
+    "Subject": null,
+    "Message": {
+      "account":"175816075786",
+      "detailType":"CodeCommit Repository State Change",
+      "region":"ap-northeast-2",
+      "source":"aws.codecommit",
+      "time":"2020-11-12T06:06:28Z",
+      "notificationRuleArn":"arn:aws:codestar-notifications:ap-northeast-2:175816075786:notificationrule/2083f88f9e4136f0a5ead6166750a1d902c05054",
+      "detail": {
+        "referenceFullName":"refs/heads/dev",
+        "repositoryId":"18688160-9143-4942-aeb9-52c2c460ebea",
+        "referenceType":"branch",
+        "commitId":"628c06a73f4b518ab3c29f0222fc8bd38f289b9b",
+        "callerUserArn":"arn:aws:iam::175816075786:user/ysungjoo_fuz",
+        "event":"referenceUpdated",
+        "repositoryName":"ui-mobile",
+        "oldCommitId":"64e3ac8b5e2129be8c1a2a87f14c8ecf2353b0a5",
+        "referenceName":"dev"
+      },
+      "resources":["arn:aws:codecommit:ap-northeast-2:175816075786:ui-mobile"],
+      "additionalAttributes":{}
+    },
+    "Timestamp": "2020-11-12T06:06:29.925Z",
+    "SignatureVersion": "1",
+    "Signature": "ig4WPYGObYMBUGTCi/Q2eAqwc6q0sFXh+rqrilpi+C210VrCSAKneYzHfMcRoTr74b8gjSLwh306h/+0iBVSiT1V9gkE4nBxrUtMZhe3SK409CpghLRNMwt/2CQero2cSgCzUkzwucoczOnW7yVjT+YoJG3GmxULbIqewr5XSjWtApktcRhuEGP0dlUMMjtlLSSt2fvtIcoR/vxXzCjSs/dDnA+bhJTXE9SalAOZdh3wZ6cafmMIISYXc0eAemQgrUiTut+25IgueQeFq7qVMZ57aCL8dPz6fwD8aG8U4fy5bTll7WFhxnmiE5tH4G9Oi0+x7228pCYHSimtyapKKw==",
+    "SigningCertUrl": "https://sns.ap-northeast-2.amazonaws.com/SimpleNotificationService-a86cb10b4e1f29c941702d737128f7b6.pem",
+    "UnsubscribeUrl": "https://sns.ap-northeast-2.amazonaws.com/?Action=Unsubscribe&SubscriptionArn=arn:aws:sns:ap-northeast-2:175816075786:management-messenger-slack-codepipline-sns:97789c86-4d7c-4331-92a9-21b17a1614bb",
+    "MessageAttributes": {}
+  }
+}

@@ -1,0 +1,218 @@
+'use strict';
+const https = require("https");
+const AWS = require("aws-sdk");
+
+exports.handler = (event, context, callback) => {
+  // Sets request options
+  var options = {
+    host: 'hooks.slack.com',
+    port: '443',
+    path: '/services/TQRSWMLPR/B01D0R9F4QL/58yNAC8tH14wXLCnTo6YWYjT', //aws system manager prameter store 사용형태로 전환필요
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    }
+  };
+   
+  let records = event.Records[0];
+  //const records = JSON.parse(event.Records[0]);
+  console.log('Message received from Records:', records);
+
+  let color = "#36a64f"
+  var EventSource = records.EventSource;
+
+  const timestamp =
+    new Date(event.Records[0].Sns.Timestamp).getTime() / 1000;
+  
+  var msg = event.Records[0].Sns.Message;
+  console.log('Message received from SNS Message:', msg);
+
+  var detail = JSON.stringify(event.Records[0].Sns.Message.detail);
+  console.log('Message received from SNS Message Detail:', detail);
+  
+  var region = event.Records[0].Sns.Message.region;
+  var detailType = event.Records[0].Sns.Message.detailType;
+  console.log("region and etc:",region+' '+detailType+' ');
+
+  /*
+  ******************************
+  * codecommit
+  ******************************
+  */
+  if ( JSON.stringify(msg).indexOf("aws:codecommit") != -1 ){
+    console.log('aws.codecommit');
+
+    let commitId = detail.commitId;
+    
+    if ( JSON.stringify(detail).indexOf("repositoryNames") != -1 ){
+      var repository = detail.repositoryNames[0];
+    } else {
+      var repository = detail.repositoryName;
+    }
+
+    console.log("cID:",commitId);
+    console.log("repo:",repository);
+
+    const codecommit = new AWS.CodeCommit({ apiVersion: "2015-04-13" });
+    codecommit.getCommit(
+    {
+      commitId: commitId,
+      repositoryName: repository
+    },
+    function(err, data) {
+      if (err) {
+        context.fail(err);
+      } else {
+        if ( JSON.stringify(msg).indexOf("referenceName") != -1 ){
+          var referenceName= msg.detail.referenceName;
+        } else {
+          var referenceName = "src:  Dest: ";
+        }
+        //console.log(data);
+        const commit = data.commit;
+        let commitMsg = commit.message;
+        let authorName = commit.author.name + " <" + commit.author.email + ">";
+        const slackMessage = {
+          text: "*" + EventSource + "*",
+          attachments: [
+          {
+            color: color,
+            author_name: authorName,
+            title: "Notification " +detailType,
+            title_link:
+              "https://ap-northeast-2.console.aws.amazon.com/codecommit/home?region=" +
+              region +
+              "#repository/" +
+              repository +
+              "/commit/" +
+              commitId,
+              fields: [
+              {
+                title: "Branch",
+                value: referenceName,
+                short: false
+              },
+              {
+                title: "Message",
+                value: "`" + commitMsg + "`",
+                short: false
+              }
+            ],
+            ts: timestamp
+          }]
+        };
+        const req = https.request(options, (res) => {
+          let body = '';
+          console.log('Status:', res.statusCode);
+          console.log('Headers:', JSON.stringify(res.headers));
+          res.setEncoding('utf8');
+          res.on('data', (chunk) => body += chunk);
+          res.on('end', () => {
+            console.log('Successfully processed HTTPS response');
+            // If we know it's JSON, parse it
+            if (res.headers['content-type'] === 'application/json') {
+              body = JSON.parse(body);
+            }
+            callback(null, body);
+          });
+        });
+        req.on('error', callback);
+        req.write(JSON.stringify(slackMessage));
+        req.end();
+      }
+    });
+  /*
+  ******************************
+  * codepipeline
+  ******************************
+  */
+  } else if ( JSON.stringify(msg).indexOf("aws:codepipeline") != -1 ){
+    console.log('aws.codepipeline');
+    var status = "aaaaa"
+    var pipeline = "aaaa"
+    const slackMessage = {
+      text: "*" + EventSource + "*",
+      attachments: [
+      {
+        color: color,
+        title: detailType + " Notification",
+        title_link:
+          "https://ap-northeast-2.console.aws.amazon.com/codesuite/codepipeline/pipelines/" + 
+          pipeline +
+          "/view?region=" +
+          region,
+          fields: [
+          {
+            title: "Status",
+            value: status,
+            short: false
+          },
+          {
+            title: "Message",
+            value: "`" + msg + "`",
+            short: false
+          }
+        ],
+        ts: timestamp
+      }]
+    };
+    const req = https.request(options, (res) => {
+      let body = '';
+      console.log('Status:', res.statusCode);
+      console.log('Headers:', JSON.stringify(res.headers));
+      res.setEncoding('utf8');
+      res.on('data', (chunk) => body += chunk);
+      res.on('end', () => {
+        console.log('Successfully processed HTTPS response');
+        // If we know it's JSON, parse it
+        if (res.headers['content-type'] === 'application/json') {
+          body = JSON.parse(body);
+        }
+        callback(null, body);
+      });
+    });
+    req.on('error', callback);
+    req.write(JSON.stringify(slackMessage));
+    req.end();
+  /*
+  ******************************
+  * ETC
+  ******************************
+  */
+  } else {
+    console.log('ETC');
+    const slackMessage = {
+      text: "*" + EventSource + "*",
+      attachments: [
+      {
+        color: color,
+        title: "Notification SNS",
+        fields: [
+        {
+          title: "Message",
+          value: "`" + msg + "`",
+          short: false
+        }],
+        ts: timestamp
+      }]
+    }
+    const req = https.request(options, (res) => {
+      let body = '';
+      console.log('Status:', res.statusCode);
+      console.log('Headers:', JSON.stringify(res.headers));
+      res.setEncoding('utf8');
+      res.on('data', (chunk) => body += chunk);
+      res.on('end', () => {
+        console.log('Successfully processed HTTPS response');
+        // If we know it's JSON, parse it
+        if (res.headers['content-type'] === 'application/json') {
+          body = JSON.parse(body);
+        }
+        callback(null, body);
+      });
+    });
+    req.on('error', callback);
+    req.write(JSON.stringify(slackMessage));
+    req.end();
+  }
+}

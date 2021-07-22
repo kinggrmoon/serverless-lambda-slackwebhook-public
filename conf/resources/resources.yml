@@ -1,0 +1,52 @@
+dev:
+  ## System Manger Parameter
+  Resources:
+    BasicParameter:
+      Type: AWS::SSM::Parameter
+      Properties: 
+        DataType: SecureString
+        Description: "Slack hook path"
+        Name: "/management/messenger/slack"
+        Value: "/services/TQRSWMLPR/B01D0R9F4QL/58yNAC8tH14wXLCnTo6YWYjTcd"
+        AllowedPattern: "^[a-zA-Z]{1,10}$"
+        Tags:
+          Environment: DEV
+  # WebSettings (S3, CloudFront, Route53)
+#  - ${file(conf/resources/cloudfront.yml)}
+#  - ${file(conf/resources/web-settings.yml)}
+#  - ${file(conf/resources/cdn.yml)}
+
+  # CICD (TEST/PROD)
+#  - ${file(conf/resources/cicd/cicd.yml):${self:custom.currentStage}.dev}
+#  - ${file(conf/resources/cicd/cicd.yml):${self:custom.currentStage}.test}
+#  - ${file(conf/resources/cicd/cicd.yml):${self:custom.currentStage}.prod}
+
+  # LOG (Kinesis)
+#  - ${file(conf/resources/logs/iam.yml)}
+#  - ${file(conf/resources/logs/bucket.yml)}
+#  - ${file(conf/resources/logs/glue.yml)}
+#  - ${file(conf/resources/logs/kinesis.yml)}
+#  - ${file(conf/resources/logs/apigateway.yml)}
+
+  # DyanmoDB (AuditsTarget)
+#  - ${file(conf/resources/reports.yml)}
+
+
+test:
+#  # WebSettings (S3, CloudFront, Route53)
+#  - ${file(conf/resources/cloudfront.yml)}
+#  - ${file(conf/resources/web-settings.yml)}
+#  - ${file(conf/resources/logs/bucket.yml)}
+#  - ${file(conf/resources/cdn.yml)}
+
+#  # LOG (Kinesis)
+#  - ${file(conf/resources/logs/iam.yml)}
+#  - ${file(conf/resources/logs/bucket.yml)}
+#  - ${file(conf/resources/logs/glue.yml)}
+#  - ${file(conf/resources/logs/kinesis.yml)}
+#  - ${file(conf/resources/logs/apigateway.yml)}
+
+#  # DyanmoDB (AuditsTarget)
+#  - ${file(conf/resources/reports.yml)}
+
+prod:

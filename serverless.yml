@@ -1,0 +1,74 @@
+service: management-messenger-slack
+# app and org for use with dashboard.serverless.com
+#app: your-app-name
+#org: your-org-name
+
+# You can pin your service to only deploy with a specific Serverless version
+# Check out our docs for more details
+# frameworkVersion: "=X.X.X"
+
+custom:
+  currentStage: ${opt:stage, self:provider.stage}
+  currentRegion: ${opt:region, self:provider.region}
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  memorySize: 1024
+  timeout: 10
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'ap-northeast-2'}
+  environment:
+      SlackHookPath: "XXXXXXXX"
+  deploymentBucket:
+    tags: # Optional deploy S3 bucket tags
+      Application: management
+      Service: messenger-slack
+      Role: serverless
+      Owner: grmoon
+      Project: easyshopping 
+  tags: # Tags that will be added to each of the deployment resources
+    Application: management
+    Service: messenger-slack
+    Role: serverless
+    Owner: grmoon
+    Project: easyshopping 
+  stackTags: # Optional CF stack tags
+    Application: management
+    Service: messenger-slack
+    Role: serverless
+    Owner: grmoon
+    Project: easyshopping
+  iamRoleStatements:
+    - Effect: Allow
+      Action: codecommit:GetCommit
+      Resource: "*"
+    - Effect: Allow
+      Action: ssm:GetParameter
+      Resource: XXXXXXXX
+
+#resources: 
+#  - ${file(conf/resources/resources.yml):${self:custom.currentStage}}
+
+functions:
+  snstoslack:
+    handler: functions/snstoslack/handler.handler
+    memorySize: 512
+    timeout: 5
+    events:
+      - sns: management-messenger-slack-sns
+
+#  codecommit:
+#    handler: functions/codecommit/handler.handler
+#    memorySize: 512
+#    timeout: 5
+#    events:
+#      - sns: management-messenger-slack-codecommit-sns
+#  codepipeline:
+#    handler: functions/codepipeline/handler.handler
+#    memorySize: 512
+#    timeout: 5
+#    events:
+#      - sns: management-messenger-slack-codepipline-sns
+
+
